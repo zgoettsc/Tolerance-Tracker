@@ -34,61 +34,94 @@ struct InitialSetupView: View {
                 if step == 0 {
                     ZStack {
                         Color(red: 242/255, green: 247/255, blue: 255/255).ignoresSafeArea()
-                        VStack(spacing: 20) {
-                            Text("Welcome to Tolerance Tracker")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                            Text("Please select an option to get started")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            Button(action: {
-                                isLogOnly = false
-                                step = 1
-                            }) {
-                                Text("Setup New Program")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.blue)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
+                        VStack(spacing: 24) {
+                            VStack(spacing: 8) {
+                                Text("Welcome to")
+                                    .font(.title2)
+                                    .foregroundColor(.gray)
+                                Text("Tolerance Tracker")
+                                    .font(.largeTitle.bold())
+                                    .foregroundColor(.blue)
                             }
-                            Button(action: {
-                                isLogOnly = true
-                                step = 1
-                            }) {
-                                Text("Join Existing Program")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
+
+                            VStack(spacing: 16) {
+                                Button(action: {
+                                    isLogOnly = false
+                                    step = 1
+                                }) {
+                                    Text("Setup New Program")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color.blue)
+                                        .cornerRadius(12)
+                                        .shadow(radius: 4)
+                                }
+
+                                Button(action: {
+                                    isLogOnly = true
+                                    step = 1
+                                }) {
+                                    Text("Join Existing Program")
+                                        .font(.headline)
+                                        .foregroundColor(.blue)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color.white)
+                                        .cornerRadius(12)
+                                        .shadow(radius: 4)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .stroke(Color.blue, lineWidth: 1)
+                                        )
+                                }
                             }
+                            .padding(.top, 20)
                         }
-                        .padding()
+                        .padding(.horizontal, 30)
                     }
                 }
+
                 else if step == 1 && isLogOnly {
                     ZStack {
                         Color(red: 242/255, green: 247/255, blue: 255/255).ignoresSafeArea()
-                        VStack(spacing: 20) {
-                            TextField("Your Name", text: $userName)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding()
-                            TextField("Room Code", text: $roomCodeInput)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding()
-                            if showingRoomCodeError {
-                                Text("Please enter both a name and a room code")
-                                    .foregroundColor(.red)
-                                    .font(.caption)
+                        VStack(spacing: 24) {
+                            VStack(spacing: 8) {
+                                Text("Join Existing Program")
+                                    .font(.title)
+                                    .foregroundColor(.blue)
+                            }
+
+                            VStack(spacing: 16) {
+                                TextField("Your Name", text: $userName)
+                                    .padding()
+                                    .background(Color.white)
+                                    .cornerRadius(10)
+                                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.3)))
+                                    .shadow(radius: 1)
+
+                                TextField("Room Code", text: $roomCodeInput)
+                                    .padding()
+                                    .background(Color.white)
+                                    .cornerRadius(10)
+                                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.3)))
+                                    .shadow(radius: 1)
+
+                                if showingRoomCodeError {
+                                    Text("Please enter both a name and a room code")
+                                        .foregroundColor(.red)
+                                        .font(.caption)
+                                }
                             }
                         }
-                        .padding()
+                        .padding(.horizontal, 30)
                     }
                 }
+
                 else if step == 1 && !isLogOnly {
                     Form {
-                        Section(header: Text("Profile Image")) {
+                        Section(header: Text("Participant Image")) {
                             if let profileImage = profileImage {
                                 Image(uiImage: profileImage)
                                     .resizable()
@@ -99,7 +132,7 @@ struct InitialSetupView: View {
                                         showingImagePicker = true
                                     }
                             } else {
-                                Button("Add Profile Image") {
+                                Button("Add Participant Image") {
                                     showingImagePicker = true
                                 }
                             }
@@ -114,6 +147,7 @@ struct InitialSetupView: View {
                         }
                     }
                 }
+
                 else if step == 2 && isLogOnly {
                     RemindersView(appData: appData)
                 }
@@ -158,10 +192,9 @@ struct InitialSetupView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if step == 0 || (step == 3 && !isLogOnly) { // Modified condition
+                    if step == 0 || (step == 3 && !isLogOnly) {
                         EmptyView()
-                    }
-                    else {
+                    } else {
                         Button(getNextButtonTitle()) {
                             if isLogOnly && step == 1 {
                                 if !roomCodeInput.isEmpty && !userName.isEmpty {
@@ -173,12 +206,10 @@ struct InitialSetupView: View {
                                     UserDefaults.standard.set(newUser.id.uuidString, forKey: "currentUserId")
                                     debugMessage += "\nCreated user: \(newUser.name) with ID: \(newUser.id)"
                                     step = 2
-                                }
-                                else {
+                                } else {
                                     showingRoomCodeError = true
                                 }
-                            }
-                            else if !isLogOnly && step == 1 {
+                            } else if !isLogOnly && step == 1 {
                                 if !userName.isEmpty {
                                     debugMessage = "Creating new setup with name: \(userName)"
                                     let newRoomCode = appData.roomCode ?? UUID().uuidString
@@ -191,8 +222,7 @@ struct InitialSetupView: View {
                                         appData.currentUser = newUser
                                         UserDefaults.standard.set(newUser.id.uuidString, forKey: "currentUserId")
                                         debugMessage += "\nCreated new user: \(newUser.name)"
-                                    }
-                                    else if let currentUser = appData.currentUser, currentUser.name != userName {
+                                    } else if let currentUser = appData.currentUser, currentUser.name != userName {
                                         let updatedUser = User(
                                             id: currentUser.id,
                                             name: userName,
@@ -226,8 +256,7 @@ struct InitialSetupView: View {
 
                                     step = 2
                                 }
-                            }
-                            else if (isLogOnly && step == 3) || (!isLogOnly && step == 5) {
+                            } else if (isLogOnly && step == 3) || (!isLogOnly && step == 5) {
                                 debugMessage = "Setup completed"
                                 UserDefaults.standard.set(true, forKey: "hasCompletedSetup")
                                 NotificationCenter.default.post(name: Notification.Name("SetupCompleted"), object: nil)
@@ -235,8 +264,7 @@ struct InitialSetupView: View {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                     isInitialSetupActive = false
                                 }
-                            }
-                            else {
+                            } else {
                                 step += 1
                             }
                         }
@@ -280,8 +308,7 @@ struct InitialSetupView: View {
     private func isNextDisabled() -> Bool {
         if step == 1 && isLogOnly {
             return roomCodeInput.isEmpty || userName.isEmpty
-        }
-        else if step == 1 && !isLogOnly {
+        } else if step == 1 && !isLogOnly {
             return userName.isEmpty
         }
         return false
@@ -295,8 +322,7 @@ struct InitialSetupView: View {
             UserDefaults.standard.set(newUser.id.uuidString, forKey: "currentUserId")
             print("Initialized user in InitialSetupView: \(newUser.id) with name: \(userName)")
             debugMessage += "\nInitialized user: \(userName)"
-        }
-        else if let currentUser = appData.currentUser, currentUser.name != userName && !userName.isEmpty {
+        } else if let currentUser = appData.currentUser, currentUser.name != userName && !userName.isEmpty {
             let updatedUser = User(
                 id: currentUser.id,
                 name: userName,
@@ -319,3 +345,5 @@ struct InitialSetupView_Previews: PreviewProvider {
         InitialSetupView(appData: AppData(), isInitialSetupActive: .constant(true))
     }
 }
+
+
