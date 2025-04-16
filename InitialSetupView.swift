@@ -35,7 +35,7 @@ struct InitialSetupView: View {
                     ZStack {
                         Color(red: 242/255, green: 247/255, blue: 255/255).ignoresSafeArea()
                         VStack(spacing: 20) {
-                            Text("Welcome to TIPs")
+                            Text("Welcome to Tolerance Tracker")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
                             Text("Please select an option to get started")
@@ -45,7 +45,7 @@ struct InitialSetupView: View {
                                 isLogOnly = false
                                 step = 1
                             }) {
-                                Text("Create New Setup")
+                                Text("Setup New Program")
                                     .frame(maxWidth: .infinity)
                                     .padding()
                                     .background(Color.blue)
@@ -88,14 +88,6 @@ struct InitialSetupView: View {
                 }
                 else if step == 1 && !isLogOnly {
                     Form {
-                        Section(header: Text("Cycle Information")) {
-                            TextField("Patient Name", text: $patientName)
-                            DatePicker("Start Date", selection: $startDate, displayedComponents: [.date])
-                            DatePicker("Food Challenge Date", selection: $foodChallengeDate, displayedComponents: [.date])
-                        }
-                        Section(header: Text("Your Name")) {
-                            TextField("Your Name", text: $userName)
-                        }
                         Section(header: Text("Profile Image")) {
                             if let profileImage = profileImage {
                                 Image(uiImage: profileImage)
@@ -111,6 +103,14 @@ struct InitialSetupView: View {
                                     showingImagePicker = true
                                 }
                             }
+                        }
+                        Section(header: Text("Cycle Information")) {
+                            TextField("Participant Name", text: $patientName)
+                            DatePicker("Start Date", selection: $startDate, displayedComponents: [.date])
+                            DatePicker("Food Challenge Date", selection: $foodChallengeDate, displayedComponents: [.date])
+                        }
+                        Section(header: Text("Your Name")) {
+                            TextField("Your Name", text: $userName)
                         }
                     }
                 }
@@ -158,7 +158,7 @@ struct InitialSetupView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if step == 0 || step == 3 {
+                    if step == 0 || (step == 3 && !isLogOnly) { // Modified condition
                         EmptyView()
                     }
                     else {
